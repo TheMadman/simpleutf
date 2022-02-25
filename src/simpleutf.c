@@ -6,7 +6,7 @@
 
 static int continuation_bytes(const char *bytes, size_t max_length)
 {
-	int result = 1;
+	int result = 2;
 	for (; max_length; max_length--) {
 		switch (*bytes & MARKER_BITS) {
 			case 0:
@@ -21,6 +21,18 @@ static int continuation_bytes(const char *bytes, size_t max_length)
 	}
 }
 
+static int first_continuation_byte(const char *bytes, size_t max_length)
+{
+	switch (*bytes & MARKER_BITS) {
+		case 0:
+		case MARKER_BIT_SECOND:
+		case MARKER_BIT_FIRST | MARKER_BIT_SECOND:
+			return 0;
+		case MARKER_BIT_FIRST:
+			return continuation_bytes(bytes + 1, max_length - 1);
+	}
+}
+
 int sutf8_len(const char *bytes, size_t max_length)
 {
 	switch (*bytes & MARKER_BITS) {
@@ -28,7 +40,7 @@ int sutf8_len(const char *bytes, size_t max_length)
 		case MARKER_BIT_SECOND:
 			return 1;
 		case MARKER_BIT_FIRST | MARKER_BIT_SECOND:
-			return continuation_bytes(bytes + 1, max_length - 1);
+			return first_continuation_byte(bytes + 1, max_length - 1);
 		case MARKER_BIT_FIRST:
 			return 0;
 	}

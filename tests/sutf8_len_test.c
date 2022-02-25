@@ -35,5 +35,28 @@ int main()
 			return 1;
 		}
 	}
+
+	{
+		// invalid - two starter bytes
+		const char string[] = "\xf0\xf0";
+		int result = sutf8_len(string, sizeof(string));
+		int expected = 0;
+		if (expected != result) {
+			print("Unexpected result: %d\n", result);
+			return 1;
+		}
+	}
+
+	{
+		// invalid - starts with continuation bit
+		const char string[] = "\x9f\x92\xa9";
+		int result = sutf8_len(string, sizeof(string));
+		int expected = 0;
+		if (expected != result) {
+			print("Unexpected result: %d\n", result);
+			return 1;
+		}
+	}
+
 	return 0;
 }
