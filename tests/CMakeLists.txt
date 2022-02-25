@@ -1,0 +1,3 @@
+add_executable(sutf8_len_test sutf8_len_test.c)
+target_link_libraries(sutf8_len_test simpleutf)
+add_test(NAME sutf8_len_test COMMAND sutf8_len_test)
